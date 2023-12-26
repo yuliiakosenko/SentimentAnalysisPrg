@@ -1,19 +1,18 @@
 package ie.atu.sw;
 
 import java.util.Map;
-import java.util.Scanner;
 
-public class Analyse{
+public class Analyse implements TextProcessor {
 
     private Map<String, Double> lexicon;
 
     public Analyse(Map<String, Double> lexicon) {
         this.lexicon = lexicon;
     }
-    
-    
 
-    public double analyseText(String text) {
+    @Override
+    public double processText(String text) {
+        // Existing implementation of analyseText
         double score = 0;
         text = text.trim().replaceAll("[^a-zA-Z\\s]", "").toLowerCase();
 

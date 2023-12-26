@@ -65,15 +65,9 @@ public class Menu {
 	        return "Lexicon is not configured. Please load the lexicon first.";
 	    } 
 	    try {
-	      
-	        // Read text from the input file
 	        String text = readTextFromFile(inputFile);
-
-	        // Perform sentiment analysis using the pre-loaded lexiconMap
-	        Analyse analyser = new Analyse(lexiconMap);
-	        double score = analyser.analyseText(text);
-
-	        // Prepare the result string
+	        TextProcessor analyser = new Analyse(lexiconMap);
+	        double score = analyser.processText(text);
 	        result = "Sentiment Score: " + score;
 	        System.out.println(result);
 	    } catch (IOException e) {
@@ -81,6 +75,7 @@ public class Menu {
 	    }
 	    return result;
 	}
+
 
 
 

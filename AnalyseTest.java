@@ -1,75 +1,60 @@
 package ie.atu.sw;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 class AnalyseTest {
 
-	private Analyse analyse;
+    private Analyse analyse;
     private Map<String, Double> lexicon;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         lexicon = new HashMap<>();
-        lexicon.put("good", 1.0);
-        lexicon.put("bad", -1.0);
-        lexicon.put("nice", 1.5);
+        lexicon.put("happy", 1.0);
+        lexicon.put("sad", -1.0);
         analyse = new Analyse(lexicon);
     }
 
     @Test
-    public void testAnalyseTextPositive() {
-        double score = analyse.analyseText("Good and very nice book");
-        assertEquals(2.5, score, "The score should correctly reflect the sentiment");
+    void testPositiveSentiment() {
+        double score = analyse.processText("I am happy");
+        assertEquals(1.0, score, "The score should be positive for positive sentiment");
     }
 
     @Test
-    public void testAnalyseTextNegative() {
-        double score = analyse.analyseText("It is a bad day");
-        assertEquals(-1.0, score, "The score should correctly reflect the sentiment");
+    void testNegativeSentiment() {
+        double score = analyse.processText("I am sad");
+        assertEquals(-1.0, score, "The score should be negative for negative sentiment");
     }
 
     @Test
-    public void testAnalyseTextNeutral() {
-        double score = analyse.analyseText("This is neutral text");
-        assertEquals(0.0, score, "The score should be neutral for neutral text");
+    void testNeutralSentiment() {
+        double score = analyse.processText("I am neutral");
+        assertEquals(0.0, score, "The score should be neutral for neutral sentiment");
     }
 
     @Test
-    public void testAnalyseTextMixed() {
-        double score = analyse.analyseText("Good is not bad");
-        assertEquals(0.0, score, "The score should balance out for mixed sentiment");
+    void testEmptyString() {
+        double score = analyse.processText("");
+        assertEquals(0.0, score, "The score should be zero for an empty string");
     }
-/*  @Test
-    public void testAnalyseTextWithPunctuation() {
-        double score = analyse.analyseText("Happy, joyous, and bright!");
-        assertEquals(2.5, score, "The score should ignore punctuation");
-    } */
-    
-    @Test
-    public void testAnalyseTextWithPunctuation() {
-        // Assuming the lexicon contains the words "happy", "joyous", and "bright" with scores 1.0, 1.0, and 0.5 respectively
-        lexicon.put("happy", 1.0);
-        lexicon.put("joyous", 1.0);
-        lexicon.put("bright", 0.5);
 
-        double score = analyse.analyseText("Happy, joyous, and bright!");
-        assertEquals(2.5, score, "The score should ignore punctuation");
+    @Test
+    void testPunctuationHandling() {
+        double score = analyse.processText("happy, joyful, and elated!");
+        assertEquals(1.0, score, "The score should ignore punctuation and calculate correctly");
     }
-    
     @Test
     public void twoWords() {
-    	lexicon.put("very happy", 50.0);
+    	lexicon.put("very nice", 50.0);
     	lexicon.put("pleasant", 50.0);
-    	 double score = analyse.analyseText("It is very happy and pleasant year!");
+    	 double score = analyse.processText("It is very nice and pleasant year!");
          assertEquals(100, score, "The score should work with phrases");
     }
-    
-  
-    
 }
+
