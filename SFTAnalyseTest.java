@@ -3,25 +3,25 @@ package ie.atu.sw;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-class AnalyseTest {
+class SFTAnalyseTest {
 
-    private SaSAnalyse analyse;
+    private SFTAnalyse analyse;
     private Map<String, Double> lexicon;
-    private TextProcessorHelper helper;
 
     @BeforeEach
     void setUp() {
         lexicon = new HashMap<>();
         lexicon.put("happy", 1.0);
         lexicon.put("sad", -1.0);
-        helper = new TextProcessorHelper();
-        analyse = new SaSAnalyse(lexicon, helper);
+        lexicon.put("neutral", 0.0);
+        analyse = new SFTAnalyse(lexicon);
     }
 
     @Test
@@ -56,14 +56,13 @@ class AnalyseTest {
 
     @Test
     public void twoWords() throws IOException {
-        lexicon.put("very nice", 50.0);
-        
-        double score = analyse.processText(createTempFile("It is very nice and pleasant year!"));
-        assertEquals(50, score, "The score should work with phrases");
+        lexicon.put("extremely nice", 50.0);
+        double score = analyse.processText(createTempFile("It is extremely nice and pleasant year!"));
+        assertEquals(50.0, score, "The score should work with phrases");
     }
 
     private String createTempFile(String content) throws IOException {
-        Path tempFile = Files.createTempFile(null, null);
+        Path tempFile = Files.createTempFile("test", ".txt");
         Files.writeString(tempFile, content);
         tempFile.toFile().deleteOnExit();
         return tempFile.toString();
