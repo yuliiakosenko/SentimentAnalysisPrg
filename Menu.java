@@ -65,17 +65,12 @@ public class Menu {
 	        return "Lexicon is not configured. Please load the lexicon first.";
 	    } 
 	    try {
-	      
-	        // Read text from the input file
 	        String text = readTextFromFile(inputFile);
-
-	        // Perform sentiment analysis using the pre-loaded lexiconMap
-	        Analyse analyser = new Analyse(lexiconMap);
-	        double score = analyser.analyseText(text);
-
-	        // Prepare the result string
+	        TextProcessor analyser = (TextProcessor) new Analyse(lexiconMap);
+	        double score = analyser.processText(text);
 	        result = "Sentiment Score: " + score;
 	        System.out.println(result);
+	        
 	    } catch (IOException e) {
 	        System.out.println("An error occurred: " + e.getMessage());
 	    }
@@ -85,23 +80,23 @@ public class Menu {
 
 
 
+
 	private String readTextFromFile(String filePath) throws IOException {
 	    return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
 
 
-	public void specifyaTextFileDirectory() {
+	public void specifyaTextFileDirectory() throws Exception {
 	    System.out.print("Enter the path for the input directory: ");
 	    s.nextLine();
-	    inputFile = s.nextLine(); // Read user's input for input directory
-
-	    FileParser fileParser = new FileParser(inputFile);
+	    inputFile = s.nextLine(); 
+	    
 	    try {
-	        fileParser.parseInputFile(); // Corrected: No argument needed
-	    } catch (Exception e) {
+	    new FileParser().go(inputFile);} catch (Exception e) {
 	        System.out.println("Something went wrong during processing the file: " + e.getMessage());
 	    }
-	}
+	 } 
+	
 
 
 	public void specifyOutputFileDirectory() {
