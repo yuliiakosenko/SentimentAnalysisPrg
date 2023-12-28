@@ -38,8 +38,7 @@ public class Menu {
             case 1 -> specifyaTextFileDirectory();
             case 2 -> configureLexicons();
             case 3 -> specifyOutputFileDirectory();
-            case 4 -> analyse();
-            case 5 -> {keepRunning = false;
+            case 4 -> {keepRunning = false;
             out.println("[INFO] Exiting... Bye!");}
             default -> {
                 System.out.println("[Error] Invalid Selection");
@@ -58,29 +57,8 @@ public class Menu {
     }
 	}
 
-	public String analyse() {
-	    String result = "";
-	    
-	    if (lexiconMap == null) {
-	        return "Lexicon is not configured. Please load the lexicon first.";
-	    } 
-	    try {
-	      
-	        // Read text from the input file
-	        String text = readTextFromFile(inputFile);
 
-	        // Perform sentiment analysis using the pre-loaded lexiconMap
-	        Analyse analyser = new Analyse(lexiconMap);
-	        double score = analyser.analyseText(text);
 
-	        // Prepare the result string
-	        result = "Sentiment Score: " + score;
-	        System.out.println(result);
-	    } catch (IOException e) {
-	        System.out.println("An error occurred: " + e.getMessage());
-	    }
-	    return result;
-	}
 
 
 
@@ -90,36 +68,40 @@ public class Menu {
 	}
 
 
-	public void specifyaTextFileDirectory() {
+	public void specifyaTextFileDirectory() throws Exception {
 	    System.out.print("Enter the path for the input directory: ");
 	    s.nextLine();
-	    inputFile = s.nextLine(); // Read user's input for input directory
-
-	    FileParser fileParser = new FileParser(inputFile);
+	    inputFile = s.nextLine(); 
+	    
 	    try {
-	        fileParser.parseInputFile(); // Corrected: No argument needed
-	    } catch (Exception e) {
+	    new FileParser().go(inputFile);} catch (Exception e) {
 	        System.out.println("Something went wrong during processing the file: " + e.getMessage());
 	    }
-	}
+	 } 
+	
 
 
 	public void specifyOutputFileDirectory() {
 	    System.out.print("Enter the path for the output file: ");
 	    s.nextLine();
-	    outputFilePath = s.nextLine(); // Read user's input for output file path
+	    outputFilePath = s.nextLine();
 
 	    try {
-	        // Assuming the analyse method returns the sentiment score as a String
-	        String analysisResult = analyse();
+	        TweetAnalyser analyser = new TweetAnalyser(lexiconMap, inputFile);
+	        String analysisResult = analyser.analyse();
 
-	        // Now write this result to the specified file
 	        Outputter.writeToFile(outputFilePath, analysisResult);
 	        System.out.println("Analysis output written to file successfully at " + outputFilePath);
+	    } catch (IOException e) {
+	        System.out.println("An error occurred while writing to the file: " + e.getMessage());
+	        e.printStackTrace();  
 	    } catch (Exception e) {
-	        System.out.println("An error occurred: " + e.getMessage());
+	        System.out.println("An error occurred during analysis: " + e.getMessage());
+	        e.printStackTrace();
 	    }
 	}
+
+
 
 
 	public void configureLexicons() {
@@ -145,7 +127,7 @@ public class Menu {
 
 	public void show() 
 	{
-		//You should put the following code into a menu or Menu class
+		
 		System.out.println(ConsoleColour.WHITE);
 		System.out.println("************************************************************");
 		System.out.println("*     ATU - Dept. of Computer Science & Applied Physics    *");
@@ -155,11 +137,10 @@ public class Menu {
 		System.out.println("************************************************************");
 		System.out.println("(1) Specify a Text File Directory");
 		System.out.println("(2) Configure Lexicons");
-		System.out.println("(3) Specify an OutputFile Directory (default: ./out.txt)");
-		System.out.println("(4) Analyse");
-		System.out.println("(5) Quit");
+		System.out.println("(3) Specify an OutputFile Directory for Analysis");
+		System.out.println("(4) Quit");
 		
-		//Output a menu of options and solicit text from the user
+	
 		System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
 		System.out.print("Select Option [1-4]>");
 		System.out.println();
