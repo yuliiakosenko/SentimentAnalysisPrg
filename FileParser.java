@@ -1,31 +1,41 @@
 package ie.atu.sw;
 
+import static java.lang.System.out;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+
 
 public class FileParser {
-    private String inputFile;
+	private static int line = 0;
+	
+	//private Set<String> words = new ConcurrentSkipListSet<>();
+	private Collection<String> words = new ConcurrentLinkedDeque<>();
+	
+	public void go(String input) throws Exception {
+		try (var pool = Executors.newVirtualThreadPerTaskExecutor()){
+			Files.lines(Paths.get(input)).forEach(text -> pool.execute(() -> process(text, ++line)));
+		}
+		
+		out.println("Words: " + words.size());
+	}
+	
+	public void process(String text, int line) {
+		Arrays.stream(text.split("\\s+")).forEach(w -> words.add(w));
+	}
 
-    public FileParser(String inputFile) {
-        this.inputFile = inputFile;
-    }
 
-    public void parseInputFile() throws IOException {
-        AtomicInteger lineCount = new AtomicInteger(0); //https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html 
-        AtomicInteger wordCount = new AtomicInteger(0);
-
-        Files.lines(Path.of(inputFile)).forEach(line -> {
-            lineCount.getAndIncrement();
-            String[] words = line.trim().split("\\s+"); //https://www.w3schools.com/java/ref_string_trim.asp
-            wordCount.addAndGet(words.length);
-        });
-
-        System.out.println("Total lines: " + lineCount);
-        System.out.println("Total words: " + wordCount);
-    }
-
- 
+	 public int getWordsSize() {
+	        return words.size();
+	    }
+	
 }
-

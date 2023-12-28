@@ -1,10 +1,17 @@
 package ie.atu.sw;
 
+import static java.lang.System.out;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executors;
 
 public class LexiconParsing {
     private Map<String, Double> lexicon;
@@ -35,3 +42,4 @@ public class LexiconParsing {
         return lexicon;
     }
 }
+

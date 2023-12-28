@@ -59,28 +59,31 @@ public class Menu {
 	}
 
 	public String analyse() {
-	    String result = "";
+	    StringBuilder result = new StringBuilder();
 	    
 	    if (lexiconMap == null) {
 	        return "Lexicon is not configured. Please load the lexicon first.";
 	    } 
+
 	    try {
-	      
-	        // Read text from the input file
 	        String text = readTextFromFile(inputFile);
+	        TweetAnalyser analyser = new TweetAnalyser(lexiconMap);
+	        Map<String, Double> userScores = analyser.processUserTexts(text);
 
-	        // Perform sentiment analysis using the pre-loaded lexiconMap
-	        Analyse analyser = new Analyse(lexiconMap);
-	        double score = analyser.analyseText(text);
-
-	        // Prepare the result string
-	        result = "Sentiment Score: " + score;
-	        System.out.println(result);
+	        for (Map.Entry<String, Double> entry : userScores.entrySet()) {
+	            result.append(entry.getKey()) // Username
+	                  .append(": ")           // Separator
+	                  .append(entry.getValue()) // Score
+	                  .append("\n");         // Newline for next record
+	        }
 	    } catch (IOException e) {
 	        System.out.println("An error occurred: " + e.getMessage());
+	        return "Error occurred during analysis.";
 	    }
-	    return result;
+
+	    return result.toString();
 	}
+
 
 
 
@@ -90,18 +93,17 @@ public class Menu {
 	}
 
 
-	public void specifyaTextFileDirectory() {
+	public void specifyaTextFileDirectory() throws Exception {
 	    System.out.print("Enter the path for the input directory: ");
 	    s.nextLine();
-	    inputFile = s.nextLine(); // Read user's input for input directory
-
-	    FileParser fileParser = new FileParser(inputFile);
+	    inputFile = s.nextLine(); 
+	    
 	    try {
-	        fileParser.parseInputFile(); // Corrected: No argument needed
-	    } catch (Exception e) {
+	    new FileParser().go(inputFile);} catch (Exception e) {
 	        System.out.println("Something went wrong during processing the file: " + e.getMessage());
 	    }
-	}
+	 } 
+	
 
 
 	public void specifyOutputFileDirectory() {
@@ -110,17 +112,13 @@ public class Menu {
 	    outputFilePath = s.nextLine(); // Read user's input for output file path
 
 	    try {
-	        // Assuming the analyse method returns the sentiment score as a String
 	        String analysisResult = analyse();
-
-	        // Now write this result to the specified file
 	        Outputter.writeToFile(outputFilePath, analysisResult);
 	        System.out.println("Analysis output written to file successfully at " + outputFilePath);
 	    } catch (Exception e) {
 	        System.out.println("An error occurred: " + e.getMessage());
 	    }
 	}
-
 
 	public void configureLexicons() {
 	    System.out.print("Enter the path for the Lexicons directory: ");
@@ -156,8 +154,7 @@ public class Menu {
 		System.out.println("(1) Specify a Text File Directory");
 		System.out.println("(2) Configure Lexicons");
 		System.out.println("(3) Specify an OutputFile Directory (default: ./out.txt)");
-		System.out.println("(4) Analyse");
-		System.out.println("(5) Quit");
+		System.out.println("(4) Quit");
 		
 		//Output a menu of options and solicit text from the user
 		System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
